@@ -131,7 +131,7 @@ void BuoyantObject::GetBuoyancyForce(const ignition::math::Pose3d &_pose,
         this->waterLevelPlaneArea << std::endl;
     }
 
-    this->waterLevelPlaneArea = mass / (this->fluidDensity * this->submergedHeight);    
+    this->waterLevelPlaneArea = mass / (this->fluidDensity * this->submergedHeight);
     double curSubmergedHeight;
     GZ_ASSERT(this->waterLevelPlaneArea > 0.0,
       "Water level plane area must be greater than zero");
@@ -140,19 +140,19 @@ void BuoyantObject::GetBuoyancyForce(const ignition::math::Pose3d &_pose,
     {
       // Vessel is completely out of the water
       buoyancyForce = ignition::math::Vector3d(0, 0, 0);
-      buoyancyTorque = ignition::math::Vector3d(0, 0, 0);      
+      buoyancyTorque = ignition::math::Vector3d(0, 0, 0);
       return;
     }
     else if (z - height / 2.0 < -this->submergedHeight && !this->isSurfaceVesselFloating)
     {
       curSubmergedHeight = this->boundingBox.ZLength();
-    }      
+    }
     else
-    { 
+    {
       curSubmergedHeight = this->submergedHeight;
       this->isSurfaceVesselFloating = true;
     }
-                  
+
     volume = curSubmergedHeight * this->waterLevelPlaneArea;
     buoyancyForce = ignition::math::Vector3d(0, 0, volume * this->fluidDensity * this->g);
     buoyancyTorque = ignition::math::Vector3d(
@@ -180,6 +180,8 @@ void BuoyantObject::ApplyBuoyancyForce()
 #endif
   // Get the buoyancy force in world coordinates
   ignition::math::Vector3d buoyancyForce, buoyancyTorque;
+  
+  buoyancyForce = pose.Rot().RotateVectorReverse(buoyancyForce);
 
   this->GetBuoyancyForce(pose, buoyancyForce, buoyancyTorque);
 
@@ -204,8 +206,8 @@ void BuoyantObject::ApplyBuoyancyForce()
     this->link->AddRelativeForce(
       math::Vector3(buoyancyForce.X(), buoyancyForce.Y(), buoyancyForce.Z()));
     this->link->AddRelativeTorque(
-      math::Vector3(buoyancyTorque.X(), buoyancyTorque.Y(), buoyancyTorque.Z()));          
-#endif    
+      math::Vector3(buoyancyTorque.X(), buoyancyTorque.Y(), buoyancyTorque.Z()));
+#endif
   }
 
 }
