@@ -175,8 +175,6 @@ void BuoyantObject::ApplyBuoyancyForce()
   // Get the buoyancy force in world coordinates
   ignition::math::Vector3d buoyancyForce, buoyancyTorque;
 
-  buoyancyForce = pose.Rot().RotateVectorReverse(buoyancyForce);
-
   this->GetBuoyancyForce(pose, buoyancyForce, buoyancyTorque);
 
   GZ_ASSERT(!std::isnan(buoyancyForce.Length()),
@@ -194,10 +192,10 @@ void BuoyantObject::ApplyBuoyancyForce()
   else
   {
 #if GAZEBO_MAJOR_VERSION >= 8
-    this->link->AddRelativeForce(buoyancyForce);
+    this->link->AddForce(buoyancyForce);
     this->link->AddRelativeTorque(buoyancyTorque);
 #else
-    this->link->AddRelativeForce(
+    this->link->AddForce(
       math::Vector3(buoyancyForce.X(), buoyancyForce.Y(), buoyancyForce.Z()));
     this->link->AddRelativeTorque(
       math::Vector3(buoyancyTorque.X(), buoyancyTorque.Y(), buoyancyTorque.Z()));
